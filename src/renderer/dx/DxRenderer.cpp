@@ -187,6 +187,11 @@ _CompileShader(
     return code;
 }
 
+// Routine Description:
+// - Setup D3D objects for doing shader things for terminal effects.
+// Arguments:
+// Return Value:
+// - HRESULT status.
 HRESULT DxEngine::_SetupTerminalEffects()
 {
     ::Microsoft::WRL::ComPtr<ID3D11Texture2D> swapBuffer;
@@ -417,7 +422,8 @@ HRESULT DxEngine::_SetupTerminalEffects()
                 const HRESULT hr = _SetupTerminalEffects();
                 if (FAILED(hr))
                 {
-                    LOG_HR_MSG(hr, "Failed to setup terminal effects. Non fatal so continuing.");
+                    _retroTerminalEffects = false;
+                    LOG_HR_MSG(hr, "Failed to setup terminal effects. Disabling.");
                 }
             }
         }
@@ -1012,7 +1018,8 @@ void DxEngine::_InvalidOr(RECT rc) noexcept
         const HRESULT hr2 = _PaintTerminalEffects();
         if (FAILED(hr2))
         {
-            LOG_HR_MSG(hr2, "Failed to paint terminal effects. Non fatal, continuing.");
+            _retroTerminalEffects = false;
+            LOG_HR_MSG(hr2, "Failed to paint terminal effects. Disabling.");
         }
     }
 
@@ -1402,7 +1409,7 @@ enum class CursorPaintType
 // Arguments:
 // Return Value:
 // - S_OK or relevant DirectX error.
-[[nodiscard]] HRESULT DxEngine::_PaintTerminalEffects()
+[[nodiscard]] HRESULT DxEngine::_PaintTerminalEffects() noexcept try
 {
     // Should have been initialized.
     RETURN_HR_IF(E_NOT_VALID_STATE, !_framebufferCapture);
@@ -1441,6 +1448,8 @@ enum class CursorPaintType
 
     return S_OK;
 }
+CATCH_RETURN()
+
 
 // Routine Description:
 // - Updates the default brush colors used for drawing
