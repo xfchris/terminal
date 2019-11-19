@@ -1409,7 +1409,8 @@ enum class CursorPaintType
 // Arguments:
 // Return Value:
 // - S_OK or relevant DirectX error.
-[[nodiscard]] HRESULT DxEngine::_PaintTerminalEffects() noexcept try
+[[nodiscard]] HRESULT DxEngine::_PaintTerminalEffects() noexcept
+try
 {
     // Should have been initialized.
     RETURN_HR_IF(E_NOT_VALID_STATE, !_framebufferCapture);
@@ -1449,7 +1450,6 @@ enum class CursorPaintType
     return S_OK;
 }
 CATCH_RETURN()
-
 
 // Routine Description:
 // - Updates the default brush colors used for drawing
