@@ -91,8 +91,9 @@ public:
     void GenerateGuidIfNecessary() noexcept;
 
     static GUID GetGuidOrGenerateForJson(const Json::Value& json) noexcept;
-    
+
     void SetRetroTerminalEffect(bool value) noexcept;
+
 private:
     static std::wstring EvaluateStartingDirectory(const std::wstring& directory);
 
