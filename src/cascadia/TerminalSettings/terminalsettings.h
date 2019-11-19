@@ -96,6 +96,8 @@ namespace winrt::Microsoft::Terminal::Settings::implementation
         ScrollbarState ScrollState() const noexcept;
         void ScrollState(winrt::Microsoft::Terminal::Settings::ScrollbarState const& value) noexcept;
 
+        bool RetroTerminalEffect();
+        void RetroTerminalEffect(bool value);
     private:
         uint32_t _defaultForeground;
         uint32_t _defaultBackground;
@@ -128,6 +130,8 @@ namespace winrt::Microsoft::Terminal::Settings::implementation
         hstring _envVars;
         Settings::IKeyBindings _keyBindings;
         Settings::ScrollbarState _scrollbarState;
+
+        bool _retroTerminalEffect;
     };
 }
 

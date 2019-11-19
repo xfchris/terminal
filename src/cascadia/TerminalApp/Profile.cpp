@@ -77,6 +77,9 @@ static constexpr std::string_view ImageAlignmentTopRight{ "topRight" };
 static constexpr std::string_view ImageAlignmentBottomLeft{ "bottomLeft" };
 static constexpr std::string_view ImageAlignmentBottomRight{ "bottomRight" };
 
+// Terminal effects
+static constexpr std::string_view RetroTerminalEffectKey{ "retroTerminalEffect" };
+
 Profile::Profile() :
     Profile(std::nullopt)
 {
@@ -113,7 +116,8 @@ Profile::Profile(const std::optional<GUID>& guid) :
     _backgroundImage{},
     _backgroundImageOpacity{},
     _backgroundImageStretchMode{},
-    _backgroundImageAlignment{}
+    _backgroundImageAlignment{},
+    _retroTerminalEffect{}
 {
 }
 
@@ -237,6 +241,11 @@ TerminalSettings Profile::CreateTerminalSettings(const std::unordered_map<std::w
         terminalSettings.BackgroundImageVerticalAlignment(imageVerticalAlignment);
     }
 
+    if (_retroTerminalEffect)
+    {
+        terminalSettings.RetroTerminalEffect(_retroTerminalEffect.value());
+    }
+
     return terminalSettings;
 }
 
@@ -345,6 +354,11 @@ Json::Value Profile::ToJson() const
     if (_backgroundImageAlignment)
     {
         root[JsonKey(BackgroundImageAlignmentKey)] = SerializeImageAlignment(_backgroundImageAlignment.value()).data();
+    }
+
+    if (_retroTerminalEffect)
+    {
+        root[JsonKey(RetroTerminalEffectKey)] = _retroTerminalEffect.value();
     }
 
     return root;
@@ -556,6 +570,18 @@ std::tuple<HorizontalAlignment, VerticalAlignment> Profile::_ConvertJsonToAlignm
 }
 
 // Method Description:
+// - Helper function to convert a json value into a bool.
+//   Used with JsonUtils::GetOptionalValue.
+// Arguments:
+// - json: the Json::Value object to parse.
+// Return Value:
+// - A bool
+bool Profile::_ConvertJsonToBool(const Json::Value& json)
+{
+    return json.asBool();
+}
+
+// Method Description:
 // - Layer values from the given json object on top of the existing properties
 //   of this object. For any keys we're expecting to be able to parse in the
 //   given object, we'll parse them and replace our settings with values from
@@ -693,6 +719,8 @@ void Profile::LayerJson(const Json::Value& json)
     JsonUtils::GetOptionalValue(json, BackgroundImageStretchModeKey, _backgroundImageStretchMode, &Profile::_ConvertJsonToStretchMode);
 
     JsonUtils::GetOptionalValue(json, BackgroundImageAlignmentKey, _backgroundImageAlignment, &Profile::_ConvertJsonToAlignment);
+
+    JsonUtils::GetOptionalValue(json, RetroTerminalEffectKey, _retroTerminalEffect, Profile::_ConvertJsonToBool);
 }
 
 void Profile::SetFontFace(std::wstring fontFace) noexcept
@@ -1210,4 +1238,9 @@ GUID Profile::GetGuidOrGenerateForJson(const Json::Value& json) noexcept
     JsonUtils::GetOptionalString(json, SourceKey, source);
 
     return Profile::_GenerateGuidForProfile(name, source);
+}
+
+void Profile::SetRetroTerminalEffect(bool value) noexcept
+{
+    _retroTerminalEffect = value;
 }
