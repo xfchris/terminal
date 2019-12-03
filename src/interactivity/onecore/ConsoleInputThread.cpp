@@ -54,13 +54,10 @@ DWORD WINAPI ConsoleInputThreadProcOneCore(LPVOID /*lpParam*/)
                 if (NT_SUCCESS(Status))
                 {
                     globals.getConsoleInformation().GetActiveOutputBuffer().RefreshFontWithRenderer();
-                }
 
-                globals.ntstatusConsoleInputInitStatus = Status;
-                globals.consoleInputInitializedEvent.SetEvent();
+                    globals.ntstatusConsoleInputInitStatus = Status;
+                    globals.hConsoleInputInitEvent.SetEvent();
 
-                if (NT_SUCCESS(Status))
-                {
                     try
                     {
                         // Start listening for input (returns on failure only).
