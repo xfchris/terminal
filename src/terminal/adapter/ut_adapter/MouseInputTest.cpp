@@ -5,7 +5,7 @@
 #include <wextestclass.h>
 #include "..\..\inc\consoletaeftemplates.hpp"
 
-#include "MouseInput.hpp"
+#include "..\terminal\input\MouseInput.hpp"
 
 using namespace WEX::Common;
 using namespace WEX::Logging;

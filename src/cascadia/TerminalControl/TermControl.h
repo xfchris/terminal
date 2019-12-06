@@ -73,6 +73,7 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
 
         void AdjustFontSize(int fontSizeDelta);
         void ResetFontSize();
+        void ToggleVTMouseMode();
 
         void SwapChainChanged();
         ~TermControl();
@@ -119,6 +120,7 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
 
         Settings::IControlSettings _settings;
         bool _focused;
+        bool _vtMouseMode;
         std::atomic<bool> _closing;
 
         FontInfoDesired _desiredFont;
@@ -201,7 +203,7 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
 
         ::Microsoft::Terminal::Core::ControlKeyStates _GetPressedModifierKeys() const;
         bool _TrySendKeyEvent(const WORD vkey, const WORD scanCode, ::Microsoft::Terminal::Core::ControlKeyStates modifiers);
-        bool _TrySendMouseEvent(const Windows::UI::Input::PointerPoint const& point, bool goingDown);
+        bool _TrySendMouseEvent(Windows::UI::Input::PointerPoint const& point, bool goingDown);
 
         const COORD _GetTerminalPosition(winrt::Windows::Foundation::Point cursorPosition);
         const unsigned int _NumberOfClicks(winrt::Windows::Foundation::Point clickPos, Timestamp clickTime);

@@ -21,7 +21,7 @@ Revision History:
 #include "settings.hpp"
 
 #include "conimeinfo.h"
-#include "..\terminal\adapter\MouseInput.hpp"
+#include "..\terminal\input\MouseInput.hpp"
 #include "VtIo.hpp"
 #include "CursorBlinker.hpp"
 

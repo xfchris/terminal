@@ -55,6 +55,7 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
         _swapChainPanel{ nullptr },
         _settings{ settings },
         _closing{ false },
+        _vtMouseMode{ false },
         _lastScrollOffset{ std::nullopt },
         _autoScrollVelocity{ 0 },
         _autoScrollingPointerPoint{ std::nullopt },
@@ -770,7 +771,7 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
     // Arguments:
     // - vkey: The vkey of the key pressed.
     // - states: The Microsoft::Terminal::Core::ControlKeyStates representing the modifier key states.
-    bool TermControl::_TrySendMouseEvent(const Windows::UI::Input::PointerPoint const& point, bool goingDown)
+    bool TermControl::_TrySendMouseEvent(Windows::UI::Input::PointerPoint const& point, bool goingDown)
     {
         const auto props = point.Properties();
 
@@ -797,7 +798,7 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
         const auto modifiers = _GetPressedModifierKeys();
 
         // Mouse wheel data
-        const short sWheelDelta{ props.MouseWheelDelta() };
+        const short sWheelDelta = gsl::narrow<short>(props.MouseWheelDelta());
 
         return _terminal->SendMouseEvent(terminalPosition, uiButton, modifiers, sWheelDelta);
     }
@@ -832,7 +833,7 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
             const auto altEnabled = WI_IsFlagSet(modifiers, static_cast<uint32_t>(VirtualKeyModifiers::Menu));
             const auto shiftEnabled = WI_IsFlagSet(modifiers, static_cast<uint32_t>(VirtualKeyModifiers::Shift));
 
-            if (_TrySendMouseEvent(point))
+            if (_TrySendMouseEvent(point, true))
             {
                 args.Handled(true);
                 return;
@@ -1078,6 +1079,17 @@ namespace winrt::Microsoft::Terminal::TerminalControl::implementation
     void TermControl::ResetFontSize()
     {
         _SetFontSize(_settings.FontSize());
+    }
+
+    // Method Description:
+    // - Cycle through the available mouse modes:
+    //   - SelectionMode
+    //   - VTMouseMode
+    // Arguments:
+    // - none
+    void TermControl::ToggleVTMouseMode()
+    {
+        _vtMouseMode = !_vtMouseMode;
     }
 
     // Method Description:

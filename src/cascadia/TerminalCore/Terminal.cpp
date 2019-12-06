@@ -318,7 +318,7 @@ bool Terminal::SendMouseEvent(const COORD position, const unsigned int uiButton,
         const short sWheelDelta
         */
 
-    return _terminalInput->mouseInput.HandleMouse(position, uiButton, states.Value(), sWheelDelta);
+    return _terminalInput->mouseInput.HandleMouse(position, uiButton, gsl::narrow<short>(states.Value()), sWheelDelta);
 }
 
 bool Terminal::SendCharEvent(const wchar_t ch)

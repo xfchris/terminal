@@ -15,12 +15,12 @@ Author(s):
 
 #include <functional>
 #include "../../types/inc/IInputEvent.hpp"
-#include "../adapter/MouseInput.hpp"
+#include "MouseInput.hpp"
 #pragma once
 
 namespace Microsoft::Console::VirtualTerminal
 {
-    typedef void (*WriteInputEvents)(_Inout_ std::deque<std::unique_ptr<IInputEvent>>& events);
+    typedef std::function<void(std::deque<std::unique_ptr<IInputEvent>>&)> WriteInputEvents;
 
     class TerminalInput final
     {
