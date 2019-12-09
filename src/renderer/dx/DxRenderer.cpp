@@ -1013,16 +1013,6 @@ void DxEngine::_InvalidOr(RECT rc) noexcept
 
     _invalidScroll = { 0 };
 
-    if (_retroTerminalEffects)
-    {
-        const HRESULT hr2 = _PaintTerminalEffects();
-        if (FAILED(hr2))
-        {
-            _retroTerminalEffects = false;
-            LOG_HR_MSG(hr2, "Failed to paint terminal effects. Disabling.");
-        }
-    }
-
     return hr;
 }
 
@@ -1060,6 +1050,16 @@ void DxEngine::_InvalidOr(RECT rc) noexcept
 // - S_OK on success, E_PENDING to indicate a retry or a relevant DirectX error
 [[nodiscard]] HRESULT DxEngine::Present() noexcept
 {
+    if (_retroTerminalEffects)
+    {
+        const HRESULT hr2 = _PaintTerminalEffects();
+        if (FAILED(hr2))
+        {
+            _retroTerminalEffects = false;
+            LOG_HR_MSG(hr2, "Failed to paint terminal effects. Disabling.");
+        }
+    }
+
     if (_presentReady)
     {
         try
@@ -1445,7 +1445,7 @@ try
     _d3dDeviceContext->PSSetShader(_pixelShader.Get(), nullptr, 0);
     _d3dDeviceContext->PSSetShaderResources(0, 1, shaderResource.GetAddressOf());
     _d3dDeviceContext->PSSetSamplers(0, 1, _samplerState.GetAddressOf());
-    _d3dDeviceContext->Draw(4, 0);
+    _d3dDeviceContext->Draw(ARRAYSIZE(_screenQuadVertices), 0);
 
     return S_OK;
 }
