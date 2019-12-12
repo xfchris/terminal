@@ -101,8 +101,8 @@
     <ClInclude Include="../AppLogic.h">
       <DependentUpon>../AppLogic.idl</DependentUpon>
     </ClInclude>
-    <ClInclude Include="../TabWinRT.h">
-      <DependentUpon>../TabWinRT.idl</DependentUpon>
+    <ClInclude Include="../TabTest.h">
+      <DependentUpon>../TabTest.idl</DependentUpon>
     </ClInclude>
   </ItemGroup>
   <!-- ========================= Cpp Files ======================== -->
@@ -136,8 +136,8 @@
     <ClCompile Include="../PowershellCoreProfileGenerator.cpp" />
     <ClCompile Include="../WslDistroGenerator.cpp" />
     <ClCompile Include="../AzureCloudShellGenerator.cpp" />
-    <ClCompile Include="../TabWinRT.cpp">
-      <DependentUpon>../TabWinRT.idl</DependentUpon>
+    <ClCompile Include="../TabTest.cpp">
+      <DependentUpon>../TabTest.idl</DependentUpon>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -197,7 +197,7 @@
       <DependentUpon>../TabRowControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="../TabWinRT.idl" />
+    <Midl Include="../TabTest.idl" />
   </ItemGroup>
   <!-- ========================= Misc Files ======================== -->
   <ItemGroup>
