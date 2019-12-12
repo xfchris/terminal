@@ -15,7 +15,7 @@ namespace winrt
     namespace MUX = Microsoft::UI::Xaml;
 }
 
-Tab::Tab(const GUID& profile, const TermControl& control)
+Tab::Tab(const GUID& profile, const TermControl&      )
 {
     _rootPane = std::make_shared<Pane>(profile, control, true);
 

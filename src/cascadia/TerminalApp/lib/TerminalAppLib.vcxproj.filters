@@ -103,6 +103,7 @@
     <ClInclude Include="../Tab.h">
       <Filter>tab</Filter>
     </ClInclude>
+    <ClInclude Include="../TelnetGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="../AppLogic.idl">
@@ -117,6 +118,7 @@
     <Midl Include="../ShortcutActionDispatch.idl">
       <Filter>settings</Filter>
     </Midl>
+    <Midl Include="TabWinRT.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../packages.config" />
