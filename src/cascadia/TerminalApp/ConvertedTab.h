@@ -17,6 +17,8 @@ namespace winrt::TerminalApp::implementation
         std::optional<GUID> GetFocusedProfile() const noexcept;
         void UpdateSettings(const winrt::Microsoft::Terminal::Settings::TerminalSettings& settings, const GUID& profile);
         void Scroll(const int delta);
+        winrt::hstring GetActiveTitle() const;
+        void UpdateIcon(const winrt::hstring iconPath);
         bool CanSplitPane(winrt::TerminalApp::SplitState splitType);
         void ResizeContent(const winrt::Windows::Foundation::Size& newSize);
         void ResizePane(const winrt::TerminalApp::Direction& direction);
@@ -25,14 +27,19 @@ namespace winrt::TerminalApp::implementation
 
         WINRT_CALLBACK(Closed, winrt::Windows::Foundation::EventHandler<winrt::Windows::Foundation::IInspectable>);
         DECLARE_EVENT(PropertyChanged, _PropertyChanged, Windows::UI::Xaml::Data::PropertyChangedEventHandler);
+        DECLARE_EVENT(ActivePaneChanged, _ActivePaneChangedHandlers, winrt::delegate<>);
         DEFINE_OBSERVABLE_GETSET_PROPERTY(hstring, Title, _PropertyChanged);
         DEFINE_OBSERVABLE_GETSET_PROPERTY(hstring, IconPath, _PropertyChanged);
 
     private:
         std::shared_ptr<Pane> _rootPane{ nullptr };
         std::shared_ptr<Pane> _activePane{ nullptr };
+        winrt::hstring _lastIconPath{};
+
         bool _focused{ false };
 
         void _Focus();
+        void _AttachEventHandlersToControl(const winrt::Microsoft::Terminal::TerminalControl::TermControl& control);
+        void _AttachEventHandlersToPane(std::shared_ptr<Pane> pane);
     };
 }

@@ -132,6 +132,30 @@ namespace winrt::TerminalApp::implementation
         });
     }
 
+    void ConvertedTab::UpdateIcon(const winrt::hstring iconPath)
+    {
+        // Don't reload our icon if it hasn't changed.
+        if (iconPath == IconPath())
+        {
+            return;
+        }
+
+        IconPath(iconPath);
+    }
+
+    // Method Description:
+    // - Gets the title string of the last focused terminal control in our tree.
+    //   Returns the empty string if there is no such control.
+    // Arguments:
+    // - <none>
+    // Return Value:
+    // - the title string of the last focused terminal control in our tree.
+    winrt::hstring ConvertedTab::GetActiveTitle() const
+    {
+        const auto lastFocusedControl = GetActiveTerminalControl();
+        return lastFocusedControl ? lastFocusedControl.Title() : L"";
+    }
+
     // Method Description:
     // - Determines whether the focused pane has sufficient space to be split.
     // Arguments:
@@ -198,5 +222,61 @@ namespace winrt::TerminalApp::implementation
         _activePane->Close();
     }
 
+    // Method Description:
+    // - Register any event handlers that we may need with the given TermControl.
+    //   This should be called on each and every TermControl that we add to the tree
+    //   of Panes in this tab. We'll add events too:
+    //   * notify us when the control's title changed, so we can update our own
+    //     title (if necessary)
+    // Arguments:
+    // - control: the TermControl to add events to.
+    // Return Value:
+    // - <none>
+    void ConvertedTab::_AttachEventHandlersToControl(const TermControl& control)
+    {
+        auto weakThis{ get_weak() };
+
+        control.TitleChanged([weakThis](auto newTitle) {
+            // Check if Tab's lifetime has expired
+            if (auto tab{ weakThis.get() })
+            {
+                tab->Title(tab->GetActiveTitle());
+            }
+        });
+    }
+
+    // Method Description:
+    // - Add an event handler to this pane's GotFocus event. When that pane gains
+    //   focus, we'll mark it as the new active pane. We'll also query the title of
+    //   that pane when it's focused to set our own text, and finally, we'll trigger
+    //   our own ActivePaneChanged event.
+    // Arguments:
+    // - <none>
+    // Return Value:
+    // - <none>
+    void ConvertedTab::_AttachEventHandlersToPane(std::shared_ptr<Pane> pane)
+    {
+        auto weakThis{ get_weak() };
+
+        pane->GotFocus([weakThis](std::shared_ptr<Pane> sender) {
+            // Do nothing if the Tab's lifetime is expired or pane isn't new.
+            auto tab{ weakThis.get() };
+            if (tab && sender != tab->_activePane)
+            {
+                // Clear the active state of the entire tree, and mark only the sender as active.
+                tab->_rootPane->ClearActive();
+                tab->_activePane = sender;
+                tab->_activePane->SetActive();
+
+                // Update our own title text to match the newly-active pane.
+                tab->Title(tab->GetActiveTitle());
+
+                // Raise our own ActivePaneChanged event.
+                tab->_ActivePaneChangedHandlers();
+            }
+        });
+    }
+
     DEFINE_EVENT(ConvertedTab, PropertyChanged, _PropertyChanged, Windows::UI::Xaml::Data::PropertyChangedEventHandler);
+    DEFINE_EVENT(ConvertedTab, ActivePaneChanged, _ActivePaneChangedHandlers, winrt::delegate<>);
 }
