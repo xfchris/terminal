@@ -107,6 +107,19 @@ public:                                               \
 private:                                              \
     type _##name{ __VA_ARGS__ };
 
+// Use this macro to define the method that raises the event
+#define DEFINE_OBSERVABLE_GETSET_PROPERTY(type, name, event)                       \
+public:                                                                            \
+    type name() { return _##name; };                                               \
+    void name(const type& value)                                                   \
+    {                                                                              \
+        _##name = value;                                                           \
+        event(*this, Windows::UI::Xaml::Data::PropertyChangedEventArgs{ L#name }); \
+    };                                                                             \
+                                                                                   \
+private:                                                                           \
+    type _##name;
+
 // Use this macro for quickly defining the factory_implementation part of a
 // class. CppWinrt requires these for the compiler, but more often than not,
 // they require no customization. See

@@ -1,0 +1,13 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
+namespace TerminalApp
+{
+    delegate void Closed();
+
+    [default_interface] runtimeclass ConvertedTab : Windows.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        String Title;
+        String IconPath;
+    }
+}

@@ -83,6 +83,9 @@
     <ClInclude Include="../AzureCloudShellGenerator.h" />
     <ClInclude Include="../TelnetGenerator.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="../ConvertedTab.h">
+      <DependentUpon>../ConvertedTab.idl</DependentUpon>
+    </ClInclude>
     <ClInclude Include="../ShortcutActionDispatch.h">
       <DependentUpon>../ShortcutActionDispatch.idl</DependentUpon>
     </ClInclude>
@@ -100,9 +103,6 @@
     </ClInclude>
     <ClInclude Include="../AppLogic.h">
       <DependentUpon>../AppLogic.idl</DependentUpon>
-    </ClInclude>
-    <ClInclude Include="../TabTest.h">
-      <DependentUpon>../TabTest.idl</DependentUpon>
     </ClInclude>
   </ItemGroup>
   <!-- ========================= Cpp Files ======================== -->
@@ -136,11 +136,11 @@
     <ClCompile Include="../PowershellCoreProfileGenerator.cpp" />
     <ClCompile Include="../WslDistroGenerator.cpp" />
     <ClCompile Include="../AzureCloudShellGenerator.cpp" />
-    <ClCompile Include="../TabTest.cpp">
-      <DependentUpon>../TabTest.idl</DependentUpon>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="../ConvertedTab.cpp">
+      <DependentUpon>../ConvertedTab.idl</DependentUpon>
     </ClCompile>
     <ClCompile Include="../AppKeyBindings.cpp">
       <DependentUpon>../AppKeyBindings.idl</DependentUpon>
@@ -197,7 +197,7 @@
       <DependentUpon>../TabRowControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="../TabTest.idl" />
+    <Midl Include="../ConvertedTab.idl" />
   </ItemGroup>
   <!-- ========================= Misc Files ======================== -->
   <ItemGroup>
