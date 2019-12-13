@@ -337,7 +337,7 @@ void Tab::_AttachEventHandlersToControl(const TermControl& control)
 // - <none>
 // Return Value:
 // - <none>
-void Tab::_AttachEventHandlersToPane(std::shared_ptr<Pane> pane)
+void Tab::_AttachEventHandlersToPane(std::shared_ptr<Pane> pane)    
 {
     std::weak_ptr<Tab> weakThis{ shared_from_this() };
 

@@ -12,6 +12,10 @@ namespace winrt::TerminalApp::implementation
     ConvertedTab::ConvertedTab(const GUID& profile, const TermControl& control)
     {
         _rootPane = std::make_shared<Pane>(profile, control, true);
+        
+        _rootPane->Closed([=](auto&& /*s*/, auto&& /*e*/) {
+            _ClosedHandlers(nullptr, nullptr);
+        });
 
         _activePane = _rootPane;
     }
