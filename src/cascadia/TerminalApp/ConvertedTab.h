@@ -1,12 +1,16 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 #pragma once
 #include "ConvertedTab.g.h"
 #include "Pane.h"
 
 namespace winrt::TerminalApp::implementation
 {
-    struct ConvertedTab : ConvertedTabT<ConvertedTab>
+    struct ConvertedTab : public ConvertedTabT<ConvertedTab>
     {
     public:
+        ConvertedTab() = default;
         ConvertedTab(const GUID& profile, const winrt::Microsoft::Terminal::TerminalControl::TermControl& control);
 
         winrt::Microsoft::Terminal::TerminalControl::TermControl GetActiveTerminalControl() const;

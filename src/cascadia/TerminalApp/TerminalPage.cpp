@@ -39,7 +39,8 @@ namespace winrt
 namespace winrt::TerminalApp::implementation
 {
     TerminalPage::TerminalPage() :
-        _tabs{}
+        _tabs{},
+        _convertedTabs{}
     {
         InitializeComponent();
     }
@@ -448,6 +449,9 @@ namespace winrt::TerminalApp::implementation
         // Add the new tab to the list of our tabs.
         auto newTab = _tabs.emplace_back(std::make_shared<Tab>(profileGuid, term));
 
+        auto newTabWinRT = winrt::make_self<ConvertedTab>(profileGuid, term);
+        _convertedTabs.Append(*newTabWinRT));
+
         // Hookup our event handlers to the new terminal
         _RegisterTerminalEvents(term, newTab);
 
@@ -471,6 +475,8 @@ namespace winrt::TerminalApp::implementation
                 page->_UpdateTitle(tab);
             }
         });
+
+        
 
         auto tabViewItem = newTab->GetTabViewItem();
         _tabView.TabItems().Append(tabViewItem);
@@ -758,6 +764,8 @@ namespace winrt::TerminalApp::implementation
         // Removing the tab from the collection will destroy its control and disconnect its connection.
         _tabs.erase(_tabs.begin() + tabIndex);
         _tabView.TabItems().RemoveAt(tabIndex);
+
+        _convertedTabs.RemoveAt(tabIndex);
 
         auto focusedTabIndex = _GetFocusedTabIndex();
         if (gsl::narrow_cast<int>(tabIndex) == focusedTabIndex)

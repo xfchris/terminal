@@ -5,6 +5,7 @@
 
 #include "TerminalPage.g.h"
 #include "Tab.h"
+#include "ConvertedTab.h"
 #include "CascadiaSettings.h"
 #include "Profile.h"
 
@@ -53,6 +54,7 @@ namespace winrt::TerminalApp::implementation
         std::shared_ptr<::TerminalApp::CascadiaSettings> _settings{ nullptr };
 
         std::vector<std::shared_ptr<Tab>> _tabs;
+        Windows::Foundation::Collections::IObservableVector<TerminalApp::ConvertedTab> _convertedTabs;
 
         bool _isFullscreen{ false };
 

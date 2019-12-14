@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
 #include "pch.h"
 #include "ConvertedTab.h"
 #include "ConvertedTab.g.cpp"
@@ -277,6 +280,6 @@ namespace winrt::TerminalApp::implementation
         });
     }
 
-    DEFINE_EVENT(ConvertedTab, PropertyChanged, _PropertyChanged, Windows::UI::Xaml::Data::PropertyChangedEventHandler);
     DEFINE_EVENT(ConvertedTab, ActivePaneChanged, _ActivePaneChangedHandlers, winrt::delegate<>);
+    DEFINE_EVENT(ConvertedTab, PropertyChanged, _PropertyChanged, Windows::UI::Xaml::Data::PropertyChangedEventHandler);
 }
