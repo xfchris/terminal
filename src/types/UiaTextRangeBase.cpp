@@ -790,7 +790,7 @@ IFACEMETHODIMP UiaTextRangeBase::MoveEndpointByRange(_In_ TextPatternRangeEndpoi
         if (endpoint == TextPatternRangeEndpoint::TextPatternRangeEndpoint_Start)
         {
             _start = targetEndpointValue;
-            if (_compareScreenCoords(_pData, endScreenInfoRow, endColumn, targetScreenInfoRow, targetColumn) == -1)
+            if (_compareScreenCoords(_pData, endScreenInfoRow, endColumn, targetScreenInfoRow, targetColumn) <= 0)
             {
                 // endpoints were crossed
                 _end = _start;
@@ -800,7 +800,7 @@ IFACEMETHODIMP UiaTextRangeBase::MoveEndpointByRange(_In_ TextPatternRangeEndpoi
         else
         {
             _end = targetEndpointValue;
-            if (_compareScreenCoords(_pData, startScreenInfoRow, startColumn, targetScreenInfoRow, targetColumn) == 1)
+            if (_compareScreenCoords(_pData, startScreenInfoRow, startColumn, targetScreenInfoRow, targetColumn) >= 0)
             {
                 // endpoints were crossed
                 _start = _end;
