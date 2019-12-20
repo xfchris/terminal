@@ -210,4 +210,16 @@ Temporarily using the Windows Terminal default settings.
   <data name="CloseWindowWarningTitle" xml:space="preserve">
     <value>Do you want to close all tabs?</value>
   </data>
+  <data name="NewTabCommandDescription" xml:space="preserve">
+    <value>Create a new pane</value>
+  </data>
+  <data name="SplitPaneCommandDescription" xml:space="preserve">
+    <value>Create a new pane</value>
+  </data>
+  <data name="SplitPaneHorizontalFlagDescription" xml:space="preserve">
+    <value>Create the new pane as a horizontal split (think [-])</value>
+  </data>
+  <data name="SplitPaneVerticalFlagDescription" xml:space="preserve">
+    <value>Create the new pane as a vertical split (think [|])</value>
+  </data>
 </root>

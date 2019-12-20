@@ -31,8 +31,6 @@ namespace TerminalAppLocalTests
             TEST_CLASS_PROPERTY(L"UAP:AppXManifest", L"TerminalApp.LocalTests.AppxManifest.xml")
         END_TEST_CLASS()
 
-        TEST_METHOD(TryCreateWinRTType);
-
         TEST_METHOD(ParseSimpleCommandline);
         TEST_METHOD(ParseTrickyCommandlines);
         TEST_METHOD(TestEscapeDelimiters);
@@ -78,17 +76,6 @@ namespace TerminalAppLocalTests
             Log::Comment(NoThrowString().Format(L"%s", buffer.c_str()));
         }
     };
-
-    void CommandlineTest::TryCreateWinRTType()
-    {
-        ActionAndArgs newTabAction{};
-        VERIFY_ARE_NOT_EQUAL(ShortcutAction::NewTab, newTabAction.Action());
-
-        newTabAction.Action(ShortcutAction::NewTab);
-        newTabAction.Args(NewTabArgs{});
-
-        VERIFY_ARE_EQUAL(ShortcutAction::NewTab, newTabAction.Action());
-    }
 
     void CommandlineTest::ParseSimpleCommandline()
     {

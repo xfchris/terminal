@@ -5,6 +5,8 @@
 #include "AppCommandlineArgs.h"
 #include "ActionArgs.h"
 
+#include <LibraryResources.h>
+
 using namespace winrt::TerminalApp;
 using namespace TerminalApp;
 
@@ -134,7 +136,7 @@ void AppCommandlineArgs::_buildParser()
 // - <none>
 void AppCommandlineArgs::_buildNewTabParser()
 {
-    _newTabCommand = _app.add_subcommand("new-tab", "Create a new tab");
+    _newTabCommand = _app.add_subcommand("new-tab", RSA_(L"NewTabCommandDescription"));
     _addNewTerminalArgs(_newTabCommand);
     _newTabCommand->callback([&, this]() {
         // Buld the NewTab action from the values we've parsed on the commandline.
@@ -155,14 +157,14 @@ void AppCommandlineArgs::_buildNewTabParser()
 // - <none>
 void AppCommandlineArgs::_buildSplitPaneParser()
 {
-    _newPaneCommand = _app.add_subcommand("split-pane", "Create a new pane");
+    _newPaneCommand = _app.add_subcommand("split-pane", RSA_(L"SplitPaneCommandDescription"));
     _addNewTerminalArgs(_newPaneCommand);
     auto* horizontalOpt = _newPaneCommand->add_flag("-H,--horizontal",
                                                     _splitHorizontal,
-                                                    "Create the new pane as a horizontal split (think [-])");
+                                                    RSA_(L"SplitPaneHorizontalFlagDescription"));
     auto* verticalOpt = _newPaneCommand->add_flag("-V,--vertical",
                                                   _splitVertical,
-                                                  "Create the new pane as a vertical split (think [|])");
+                                                  RSA_(L"SplitPaneVerticalFlagDescription"));
     verticalOpt->excludes(horizontalOpt);
 
     _newPaneCommand->callback([&, this]() {
