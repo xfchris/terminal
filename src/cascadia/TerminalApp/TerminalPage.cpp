@@ -683,6 +683,7 @@ namespace winrt::TerminalApp::implementation
         // Hook up the ShortcutActionDispatch object's events to our handlers.
         // They should all be hooked up here, regardless of whether or not
         // there's an actual keychord for them.
+
         _actionDispatch->OpenNewTabDropdown({ this, &TerminalPage::_HandleOpenNewTabDropdown });
         _actionDispatch->DuplicateTab({ this, &TerminalPage::_HandleDuplicateTab });
         _actionDispatch->CloseTab({ this, &TerminalPage::_HandleCloseTab });
