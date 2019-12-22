@@ -452,11 +452,12 @@ namespace winrt::TerminalApp::implementation
 
         // This gives me a com_ptr<ConvertedTab>
         auto newTabWinRT = winrt::make_self<implementation::ConvertedTab>(profileGuid, term);
+        auto newTabProjection = *newTabWinRT;
         // This gives me the projection type
-        _convertedTabs.Append(*newTabWinRT);
+        _convertedTabs.Append(newTabProjection);
 
         // Hookup our event handlers to the new terminal
-        _RegisterTerminalEvents(term, *newTabWinRT);
+        _RegisterTerminalEvents(term, newTabProjection);
 
         //// Don't capture a strong ref to the tab. If the tab is removed as this
         //// is called, we don't really care anymore about handling the event.
@@ -881,14 +882,15 @@ namespace winrt::TerminalApp::implementation
     void TerminalPage::_MoveFocus(const Direction& direction)
     {
         const auto focusedTabIndex = _GetFocusedTabIndex();
-        _convertedTabs.GetAt(focusedTabIndex)->NavigateFocus(direction);
+        auto tab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
+        tab.NavigateFocus(direction);
     }
 
     winrt::Microsoft::Terminal::TerminalControl::TermControl TerminalPage::_GetActiveControl()
     {
         int focusedTabIndex = _GetFocusedTabIndex();
-        auto focusedTab = _convertedTabs.GetAt(focusedTabIndex);
-        return focusedTab->GetActiveTerminalControl();
+        auto focusedTab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
+        return focusedTab.GetActiveTerminalControl();
     }
 
     // Method Description:
@@ -912,14 +914,14 @@ namespace winrt::TerminalApp::implementation
     {
         // GH#1117: This is a workaround because _tabView.SelectedIndex(tabIndex)
         //          sometimes set focus to an incorrect tab after removing some tabs
-        auto _tab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(tabIndex));
+        auto tab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(tabIndex));
         auto weakThis{ get_weak() };
-        _tabView.Dispatcher().RunAsync(CoreDispatcherPriority::Normal, [tab, weakThis]() {
-            if (auto page{ weakThis.get() })
-            {
-                page->_tabView.SelectedItem(tab->GetTabViewItem());
-            }
-        });
+        //_tabView.Dispatcher().RunAsync(CoreDispatcherPriority::Normal, [tab, weakThis]() {
+        //    if (auto page{ weakThis.get() })
+        //    {
+        //        page->_tabView.SelectedItem(tab->GetTabViewItem());
+        //    }
+        //});
     }
 
     // Method Description:
@@ -937,7 +939,7 @@ namespace winrt::TerminalApp::implementation
     void TerminalPage::_CloseFocusedPane()
     {
         int focusedTabIndex = _GetFocusedTabIndex();
-        winrt::com_ptr<ConvertedTab> focusedTab{ winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex)) };
+        auto focusedTab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
         focusedTab->ClosePane();
     }
 
@@ -961,7 +963,7 @@ namespace winrt::TerminalApp::implementation
     //   on its own when the last tab is closed.
     void TerminalPage::_CloseAllTabs()
     {
-        while (!_convertedTabs.empty())
+        while (_convertedTabs.Size() != 0)
         {
             _RemoveTabViewItemByIndex(0);
         }
@@ -976,7 +978,7 @@ namespace winrt::TerminalApp::implementation
     void TerminalPage::_Scroll(int delta)
     {
         int focusedTabIndex = _GetFocusedTabIndex();
-        _convertedTabs.GetAt(focusedTabIndex)->Scroll(delta);
+        winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex)).Scroll(delta);
     }
 
     // Method Description:
@@ -1005,7 +1007,7 @@ namespace winrt::TerminalApp::implementation
         const int focusedTabIndex = _GetFocusedTabIndex();
         auto focusedTab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
 
-        const auto canSplit = focusedTab->CanSplitPane(splitType);
+        const auto canSplit = focusedTab.CanSplitPane(splitType);
 
         if (!canSplit)
         {
@@ -1015,9 +1017,9 @@ namespace winrt::TerminalApp::implementation
         TermControl newControl{ controlSettings, controlConnection };
 
         // Hookup our event handlers to the new terminal
-        _RegisterTerminalEvents(newControl, _convertedTabs.GetAt(focusedTabIndex);
+        _RegisterTerminalEvents(newControl, _convertedTabs.GetAt(focusedTabIndex));
 
-        focusedTab->SplitPane(splitType, realGuid, newControl);
+        focusedTab.SplitPane(splitType, realGuid, newControl);
     }
 
     // Method Description:
@@ -1048,7 +1050,8 @@ namespace winrt::TerminalApp::implementation
         const auto focusedTabIndex = _GetFocusedTabIndex();
         const auto control = _GetActiveControl();
         const auto termHeight = control.GetViewHeight();
-        _convertedTabs.GetAt(focusedTabIndex)->Scroll(termHeight * delta);
+        auto tab = winrt::get_self<implementation::ConvertedTab>(_convetedTabs.GetAt(focusedTabIndex));
+        tab.Scroll(termHeight * delta);
     }
 
     // Method Description:

@@ -107,6 +107,19 @@ namespace winrt::TerminalApp::implementation
     }
 
     // Method Description:
+    // - Called after construction of a Tab object to bind event handlers to its
+    //   associated Pane and TermControl object
+    // Arguments:
+    // - control: reference to the TermControl object to bind event to
+    // Return Value:
+    // - <none>
+    void ConvertedTab::BindEventHandlers(const TermControl& control) noexcept
+    {
+        _AttachEventHandlersToPane(_rootPane);
+        _AttachEventHandlersToControl(control);
+    }
+
+    // Method Description:
     // - Attempts to update the settings of this tab's tree of panes.
     // Arguments:
     // - settings: The new TerminalSettings to apply to any matching controls

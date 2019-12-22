@@ -16,6 +16,7 @@ namespace winrt::TerminalApp::implementation
         winrt::Microsoft::Terminal::TerminalControl::TermControl GetActiveTerminalControl() const;
         winrt::Windows::UI::Xaml::UIElement GetRootElement();
 
+        void BindEventHandlers(const winrt::Microsoft::Terminal::TerminalControl::TermControl& control) noexcept;
         bool IsFocused() const noexcept;
         void SetFocused(const bool focused);
         std::optional<GUID> GetFocusedProfile() const noexcept;
