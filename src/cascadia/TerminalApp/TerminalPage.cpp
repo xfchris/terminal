@@ -1050,7 +1050,7 @@ namespace winrt::TerminalApp::implementation
         const auto focusedTabIndex = _GetFocusedTabIndex();
         const auto control = _GetActiveControl();
         const auto termHeight = control.GetViewHeight();
-        auto tab = winrt::get_self<implementation::ConvertedTab>(_convetedTabs.GetAt(focusedTabIndex));
+        auto tab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
         tab.Scroll(termHeight * delta);
     }
 
