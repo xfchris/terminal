@@ -4,7 +4,10 @@
 #include "pch.h"
 
 #include "../TerminalApp/TerminalPage.h"
+#include "../TerminalApp/MinMaxCloseControl.h"
+#include "../TerminalApp/TabRowControl.h"
 #include "../TerminalApp/ShortcutActionDispatch.h"
+#include "../TerminalApp/DummyMuxyControl.h"
 #include "../TerminalApp/Tab.h"
 #include "../CppWinrtTailored.h"
 #include "JsonTestClass.h"
@@ -50,6 +53,11 @@ namespace TerminalAppLocalTests
         TEST_METHOD(TryCreateTab);
 
         TEST_METHOD(TryCreateTerminalPage);
+        TEST_METHOD(LetsRuleOutMUX);
+        TEST_METHOD(LetsMakeSureItsMUX);
+        TEST_METHOD(HellDoAnythingWithMUX);
+
+        TEST_METHOD(Plz);
 
         TEST_CLASS_SETUP(ClassSetup)
         {
@@ -172,6 +180,127 @@ namespace TerminalAppLocalTests
         auto settings = std::make_shared<CascadiaSettings>();
         winrt::com_ptr<winrt::TerminalApp::implementation::TerminalPage> root{ nullptr };
 
+        auto result = RunOnUIThread([&]() {
+            auto app = ::winrt::Windows::UI::Xaml::Application::Current();
+            winrt::Microsoft::UI::Xaml::Controls::XamlControlsResources res{};
+            app.Resources(res);
+        });
+        VERIFY_SUCCEEDED(result, L"Load MUX resources into the apps resources");
+
+        // If you inline RunOnUIThread inside the VERIFY_SUCCEEDED call, the log
+        // message will contain the entire lambda. That's annoying, so don't do
+        // that.
+        result = RunOnUIThread([&]() {
+            VerifyParseSucceeded(settingsJson);
+            settings->_ParseJsonString(settingsJson, false);
+            settings->LayerJson(settings->_userSettings);
+            settings->_ValidateSettings();
+            VERIFY_ARE_EQUAL(3u, settings->GetProfiles().size());
+        });
+        VERIFY_SUCCEEDED(result);
+
+        result = RunOnUIThread([&root, &settings]() {
+            // DebugBreak();
+            root = winrt::make_self<winrt::TerminalApp::implementation::TerminalPage>();
+            root->SetSettings(settings, false);
+            VERIFY_ARE_EQUAL(0u, root->_tabs.size());
+            root->Create();
+            VERIFY_ARE_EQUAL(1u, root->_tabs.size());
+            root->_OpenNewTab(nullptr);
+            VERIFY_ARE_EQUAL(2u, root->_tabs.size());
+        });
+        VERIFY_SUCCEEDED(result);
+    }
+
+    void TabTests::HellDoAnythingWithMUX()
+    {
+        winrt::Microsoft::UI::Xaml::Controls::SplitButton button{ nullptr };
+        winrt::com_ptr<winrt::TerminalApp::implementation::DummyMuxyControl> dummy{ nullptr };
+
+        {
+            auto result = RunOnUIThread([&]() {
+                auto app = ::winrt::Windows::UI::Xaml::Application::Current();
+                winrt::Microsoft::UI::Xaml::Controls::XamlControlsResources res{};
+                app.Resources(res);
+            });
+            VERIFY_SUCCEEDED(result, L"Load MUX resources into the apps resources");
+        }
+
+        {
+            // If you inline RunOnUIThread inside the VERIFY_SUCCEEDED call, the log
+            // message will contain the entire lambda. That's annoying, so don't do
+            // that.
+            auto result = RunOnUIThread([&button]() {
+                button = winrt::Microsoft::UI::Xaml::Controls::SplitButton();
+                VERIFY_IS_NOT_NULL(button);
+            });
+            VERIFY_SUCCEEDED(result, L"Hooray you made something with MUX. Dont get cocky kid");
+        }
+
+        {
+            // If you inline RunOnUIThread inside the VERIFY_SUCCEEDED call, the log
+            // message will contain the entire lambda. That's annoying, so don't do
+            // that.
+            auto result = RunOnUIThread([&dummy]() {
+                dummy = winrt::make_self<winrt::TerminalApp::implementation::DummyMuxyControl>();
+                VERIFY_IS_NOT_NULL(dummy);
+            });
+            VERIFY_SUCCEEDED(result, L"Hooray you made something with MUX in the XBF. Dont get cocky kid");
+        }
+    }
+
+    void TabTests::LetsRuleOutMUX()
+    {
+        const std::string settingsJson{ R"(
+        {
+            "defaultProfile": "{6239a42c-0000-49a3-80bd-e8fdd045185c}",
+            "profiles": [
+                {
+                    "name": "profile0",
+                    "guid": "{6239a42c-0000-49a3-80bd-e8fdd045185c}",
+                    "historySize": 1,
+                    "commandline": "cmd.exe"
+                },
+                {
+                    "name": "profile1",
+                    "guid": "{6239a42c-1111-49a3-80bd-e8fdd045185c}",
+                    "historySize": 2,
+                    "commandline": "pwsh.exe"
+                },
+                {
+                    "name": "profile2",
+                    "historySize": 3,
+                    "commandline": "wsl.exe"
+                }
+            ],
+            "keybindings": [
+                { "keys": ["ctrl+a"], "command": { "action": "splitPane", "split": "vertical" } },
+                { "keys": ["ctrl+b"], "command": { "action": "splitPane", "split": "vertical", "profile": "{6239a42c-1111-49a3-80bd-e8fdd045185c}" } },
+                { "keys": ["ctrl+c"], "command": { "action": "splitPane", "split": "vertical", "profile": "profile1" } },
+                { "keys": ["ctrl+d"], "command": { "action": "splitPane", "split": "vertical", "profile": "profile2" } },
+                { "keys": ["ctrl+e"], "command": { "action": "splitPane", "split": "horizontal", "commandline": "foo.exe" } },
+                { "keys": ["ctrl+f"], "command": { "action": "splitPane", "split": "horizontal", "profile": "profile1", "commandline": "foo.exe" } },
+                { "keys": ["ctrl+g"], "command": { "action": "newTab" } },
+                { "keys": ["ctrl+h"], "command": { "action": "newTab", "startingDirectory": "c:\\foo" } },
+                { "keys": ["ctrl+i"], "command": { "action": "newTab", "profile": "profile2", "startingDirectory": "c:\\foo" } },
+                { "keys": ["ctrl+j"], "command": { "action": "newTab", "tabTitle": "bar" } },
+                { "keys": ["ctrl+k"], "command": { "action": "newTab", "profile": "profile2", "tabTitle": "bar" } },
+                { "keys": ["ctrl+l"], "command": { "action": "newTab", "profile": "profile1", "tabTitle": "bar", "startingDirectory": "c:\\foo", "commandline":"foo.exe" } }
+            ]
+        })" };
+
+        auto settings = std::make_shared<CascadiaSettings>();
+        winrt::com_ptr<winrt::TerminalApp::implementation::MinMaxCloseControl> mmcc{ nullptr };
+
+        {
+            auto result = RunOnUIThread([&]() {
+                auto app = ::winrt::Windows::UI::Xaml::Application::Current();
+                winrt::Microsoft::UI::Xaml::Controls::XamlControlsResources res{};
+                app.Resources(res);
+            });
+            VERIFY_SUCCEEDED(result, L"Load MUX resources into the apps resources");
+        }
+
         // If you inline RunOnUIThread inside the VERIFY_SUCCEEDED call, the log
         // message will contain the entire lambda. That's annoying, so don't do
         // that.
@@ -184,17 +313,112 @@ namespace TerminalAppLocalTests
         });
         VERIFY_SUCCEEDED(result);
 
-        result = RunOnUIThread([&root, &settings]() {
-            DebugBreak();
-            root = winrt::make_self<winrt::TerminalApp::implementation::TerminalPage>();
-            root->SetSettings(settings, false);
-            VERIFY_ARE_EQUAL(0u, root->_tabs.size());
-            root->Create();
-            VERIFY_ARE_EQUAL(1u, root->_tabs.size());
-            root->_OpenNewTab(nullptr);
-            VERIFY_ARE_EQUAL(2u, root->_tabs.size());
+        result = RunOnUIThread([&mmcc, &settings]() {
+            mmcc = winrt::make_self<winrt::TerminalApp::implementation::MinMaxCloseControl>();
+            VERIFY_IS_NOT_NULL(mmcc);
         });
         VERIFY_SUCCEEDED(result);
     }
 
+    void TabTests::LetsMakeSureItsMUX()
+    {
+        const std::string settingsJson{ R"(
+        {
+            "defaultProfile": "{6239a42c-0000-49a3-80bd-e8fdd045185c}",
+            "profiles": [
+                {
+                    "name": "profile0",
+                    "guid": "{6239a42c-0000-49a3-80bd-e8fdd045185c}",
+                    "historySize": 1,
+                    "commandline": "cmd.exe"
+                },
+                {
+                    "name": "profile1",
+                    "guid": "{6239a42c-1111-49a3-80bd-e8fdd045185c}",
+                    "historySize": 2,
+                    "commandline": "pwsh.exe"
+                },
+                {
+                    "name": "profile2",
+                    "historySize": 3,
+                    "commandline": "wsl.exe"
+                }
+            ],
+            "keybindings": [
+                { "keys": ["ctrl+a"], "command": { "action": "splitPane", "split": "vertical" } },
+                { "keys": ["ctrl+b"], "command": { "action": "splitPane", "split": "vertical", "profile": "{6239a42c-1111-49a3-80bd-e8fdd045185c}" } },
+                { "keys": ["ctrl+c"], "command": { "action": "splitPane", "split": "vertical", "profile": "profile1" } },
+                { "keys": ["ctrl+d"], "command": { "action": "splitPane", "split": "vertical", "profile": "profile2" } },
+                { "keys": ["ctrl+e"], "command": { "action": "splitPane", "split": "horizontal", "commandline": "foo.exe" } },
+                { "keys": ["ctrl+f"], "command": { "action": "splitPane", "split": "horizontal", "profile": "profile1", "commandline": "foo.exe" } },
+                { "keys": ["ctrl+g"], "command": { "action": "newTab" } },
+                { "keys": ["ctrl+h"], "command": { "action": "newTab", "startingDirectory": "c:\\foo" } },
+                { "keys": ["ctrl+i"], "command": { "action": "newTab", "profile": "profile2", "startingDirectory": "c:\\foo" } },
+                { "keys": ["ctrl+j"], "command": { "action": "newTab", "tabTitle": "bar" } },
+                { "keys": ["ctrl+k"], "command": { "action": "newTab", "profile": "profile2", "tabTitle": "bar" } },
+                { "keys": ["ctrl+l"], "command": { "action": "newTab", "profile": "profile1", "tabTitle": "bar", "startingDirectory": "c:\\foo", "commandline":"foo.exe" } }
+            ]
+        })" };
+
+        auto settings = std::make_shared<CascadiaSettings>();
+        winrt::com_ptr<winrt::TerminalApp::implementation::TabRowControl> tabRowControl{ nullptr };
+
+        {
+            auto result = RunOnUIThread([&]() {
+                auto app = ::winrt::Windows::UI::Xaml::Application::Current();
+                winrt::Microsoft::UI::Xaml::Controls::XamlControlsResources res{};
+                app.Resources(res);
+            });
+            VERIFY_SUCCEEDED(result, L"Load MUX resources into the apps resources");
+        }
+        // If you inline RunOnUIThread inside the VERIFY_SUCCEEDED call, the log
+        // message will contain the entire lambda. That's annoying, so don't do
+        // that.
+        auto result = RunOnUIThread([&]() {
+            VerifyParseSucceeded(settingsJson);
+            settings->_ParseJsonString(settingsJson, false);
+            settings->LayerJson(settings->_userSettings);
+            settings->_ValidateSettings();
+            VERIFY_ARE_EQUAL(3u, settings->GetProfiles().size());
+        });
+        VERIFY_SUCCEEDED(result);
+
+        result = RunOnUIThread([&tabRowControl, &settings]() {
+            tabRowControl = winrt::make_self<winrt::TerminalApp::implementation::TabRowControl>();
+            VERIFY_IS_NOT_NULL(tabRowControl);
+        });
+        VERIFY_SUCCEEDED(result);
+    }
+
+    void TabTests::Plz()
+    {
+        auto settings = std::make_shared<CascadiaSettings>();
+        winrt::com_ptr<winrt::TerminalApp::implementation::TabRowControl> tabRowControl{ nullptr };
+
+        {
+            auto result = RunOnUIThread([&]() {
+                auto app = ::winrt::Windows::UI::Xaml::Application::Current();
+                winrt::Microsoft::UI::Xaml::Controls::XamlControlsResources res{};
+                app.Resources(res);
+            });
+            VERIFY_SUCCEEDED(result, L"Load MUX resources into the apps resources");
+        }
+        // If you inline RunOnUIThread inside the VERIFY_SUCCEEDED call, the log
+        // message will contain the entire lambda. That's annoying, so don't do
+        // that.
+        auto result = RunOnUIThread([&]() {
+            VerifyParseSucceeded(settingsJson);
+            settings->_ParseJsonString(settingsJson, false);
+            settings->LayerJson(settings->_userSettings);
+            settings->_ValidateSettings();
+            VERIFY_ARE_EQUAL(3u, settings->GetProfiles().size());
+        });
+        VERIFY_SUCCEEDED(result);
+
+        result = RunOnUIThread([&tabRowControl, &settings]() {
+            tabRowControl = winrt::make_self<winrt::TerminalApp::implementation::TabRowControl>();
+            VERIFY_IS_NOT_NULL(tabRowControl);
+        });
+        VERIFY_SUCCEEDED(result);
+    }
 }

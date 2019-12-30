@@ -41,13 +41,16 @@
       For any types that use XAML information, if their .idl and .h aren't
       marked DependentUpon the corresponding .xaml file, XamlTypeInfo.g.h won't
       pick it up correctly. -->
-    <!-- <ApplicationDefinition Include="..\App.xaml">
+    <ApplicationDefinition Include="..\App.xaml">
       <SubType>Designer</SubType>
-    </ApplicationDefinition> -->
+    </ApplicationDefinition>
   </ItemGroup>
   <!-- When we add other user controls, they should go in here as so: -->
   <ItemGroup>
     <Page Include="../MinMaxCloseControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="../DummyMuxyControl.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="../TerminalPage.xaml">
@@ -65,6 +68,9 @@
     <ClInclude Include="../App.base.h" />
     <ClInclude Include="../AppCommandlineArgs.h" />
     <ClInclude Include="../Commandline.h" />
+    <ClInclude Include="../DummyMuxyControl.h">
+      <DependentUpon>../DummyMuxyControl.xaml</DependentUpon>
+    </ClInclude>
     <ClInclude Include="../MinMaxCloseControl.h">
       <DependentUpon>../MinMaxCloseControl.xaml</DependentUpon>
     </ClInclude>
@@ -107,9 +113,9 @@
     <ClInclude Include="../AppKeyBindings.h">
       <DependentUpon>../AppKeyBindings.idl</DependentUpon>
     </ClInclude>
-    <!-- <ClInclude Include="../App.h">
+    <ClInclude Include="../App.h">
       <DependentUpon>../App.xaml</DependentUpon>
-    </ClInclude> -->
+    </ClInclude>
     <ClInclude Include="../AppLogic.h">
       <DependentUpon>../AppLogic.idl</DependentUpon>
     </ClInclude>
@@ -119,6 +125,9 @@
     <ClCompile Include="../init.cpp" />
     <ClCompile Include="../AppCommandlineArgs.cpp" />
     <ClCompile Include="../Commandline.cpp" />
+    <ClCompile Include="../DummyMuxyControl.cpp">
+      <DependentUpon>../DummyMuxyControl.xaml</DependentUpon>
+    </ClCompile>
     <ClCompile Include="../MinMaxCloseControl.cpp">
       <DependentUpon>../MinMaxCloseControl.xaml</DependentUpon>
     </ClCompile>
@@ -162,9 +171,9 @@
     <ClCompile Include="../ActionArgs.cpp">
       <DependentUpon>../ActionArgs.idl</DependentUpon>
     </ClCompile>
-    <!-- <ClCompile Include="../App.cpp">
+    <ClCompile Include="../App.cpp">
       <DependentUpon>../App.xaml</DependentUpon>
-    </ClCompile> -->
+    </ClCompile>
     <ClCompile Include="../AppActionHandlers.cpp">
       <DependentUpon>../App.xaml</DependentUpon>
     </ClCompile>
@@ -182,13 +191,17 @@
   <ItemGroup>
     <!-- If you add idl files here, make sure to include their implementation's
     header in TerminalApp.vcxproj (as well as in this file) -->
-    <!-- <Midl Include="../App.idl">
+    <Midl Include="../App.idl">
       <DependentUpon>../App.xaml</DependentUpon>
-    </Midl> -->
+    </Midl>
     <Midl Include="../ShortcutActionDispatch.idl" />
     <Midl Include="../AppKeyBindings.idl" />
     <Midl Include="../AppLogic.idl" />
     <Midl Include="../ActionArgs.idl" />
+    <Midl Include="../DummyMuxyControl.idl">
+      <DependentUpon>../DummyMuxyControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
     <Midl Include="../MinMaxCloseControl.idl">
       <DependentUpon>../MinMaxCloseControl.xaml</DependentUpon>
       <SubType>Code</SubType>
