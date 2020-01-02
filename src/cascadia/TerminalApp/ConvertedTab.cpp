@@ -184,6 +184,27 @@ namespace winrt::TerminalApp::implementation
     }
 
     // Method Description:
+    // - Split the focused pane in our tree of panes, and place the
+    //   given TermControl into the newly created pane.
+    // Arguments:
+    // - splitType: The type of split we want to create.
+    // - profile: The profile GUID to associate with the newly created pane.
+    // - control: A TermControl to use in the new pane.
+    // Return Value:
+    // - <none>
+    void ConvertedTab::SplitPane(winrt::TerminalApp::SplitState splitType, const GUID& profile, TermControl& control)
+    {
+        auto [first, second] = _activePane->Split(splitType, profile, control);
+
+        _AttachEventHandlersToControl(control);
+
+        // Add a event handlers to the new panes' GotFocus event. When the pane
+        // gains focus, we'll mark it as the new active pane.
+        _AttachEventHandlersToPane(first);
+        _AttachEventHandlersToPane(second);
+    }
+
+    // Method Description:
     // - Update the size of our panes to fill the new given size. This happens when
     //   the window is resized.
     // Arguments:

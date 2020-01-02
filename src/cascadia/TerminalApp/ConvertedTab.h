@@ -25,6 +25,7 @@ namespace winrt::TerminalApp::implementation
         winrt::hstring GetActiveTitle() const;
         void UpdateIcon(const winrt::hstring iconPath);
         bool CanSplitPane(winrt::TerminalApp::SplitState splitType);
+        void SplitPane(winrt::TerminalApp::SplitState splitType, const GUID& profile, winrt::Microsoft::Terminal::TerminalControl::TermControl& control);
         void ResizeContent(const winrt::Windows::Foundation::Size& newSize);
         void ResizePane(const winrt::TerminalApp::Direction& direction);
         void NavigateFocus(const winrt::TerminalApp::Direction& direction);

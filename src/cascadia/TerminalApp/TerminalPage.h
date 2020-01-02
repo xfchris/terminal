@@ -81,14 +81,14 @@ namespace winrt::TerminalApp::implementation
         void _HookupKeyBindings(TerminalApp::AppKeyBindings bindings) noexcept;
         void _RegisterActionCallbacks();
 
-        void _UpdateTitle(winrt::TerminalApp::implementation::ConvertedTab tab);
-        void _UpdateTabIcon(winrt::TerminalApp::implementation::ConvertedTab tab);
+        void _UpdateTitle(winrt::TerminalApp::ConvertedTab tab);
+        void _UpdateTabIcon(winrt::TerminalApp::ConvertedTab tab);
         void _UpdateTabView();
         void _DuplicateTabViewItem();
         void _RemoveTabViewItem(const Microsoft::UI::Xaml::Controls::TabViewItem& tabViewItem);
         void _RemoveTabViewItemByIndex(uint32_t tabIndex);
 
-        void _RegisterTerminalEvents(Microsoft::Terminal::TerminalControl::TermControl term, winrt::TerminalApp::implementation::ConvertedTab hostingTab);
+        void _RegisterTerminalEvents(Microsoft::Terminal::TerminalControl::TermControl term, winrt::TerminalApp::ConvertedTab hostingTab);
 
         void _SelectNextTab(const bool bMoveRight);
         bool _SelectTab(const int tabIndex);
