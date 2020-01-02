@@ -450,11 +450,9 @@ namespace winrt::TerminalApp::implementation
         // Add the new tab to the list of our tabs.
         //auto newTab = _tabs.emplace_back(std::make_shared<Tab>(profileGuid, term));
 
-        auto newTabWinRT = winrt::make_self<implementation::ConvertedTab>(profileGuid, term);
-        winrt::TerminalApp::ConvertedTab newTabProjection = *newTabWinRT;
-        _convertedTabs.Append(newTabProjection);
-
+        auto newTabProjection = winrt::make<ConvertedTab>(profileGuid, term);
         auto newTabImpl = winrt::get_self<implementation::ConvertedTab>(newTabProjection);
+        _convertedTabs.Append(newTabProjection);
 
         // Hookup our event handlers to the new terminal
         _RegisterTerminalEvents(term, newTabProjection);
@@ -506,14 +504,14 @@ namespace winrt::TerminalApp::implementation
         /*tabViewItem.PointerPressed({ this, &TerminalPage::_OnTabClick });*/
 
         // When the tab is closed, remove it from our list of tabs.
-        newTabImpl->Closed([this, newTabImpl, weakThis](auto&& /*s*/, auto&& /*e*/) {
+        newTabImpl->Closed([this, newTabProjection, weakThis](auto&& /*s*/, auto&& /*e*/) {
             if (auto page{ weakThis.get() })
             {
-                page->_tabView.Dispatcher().RunAsync(CoreDispatcherPriority::Normal, [this, newTabImpl, weakThis]() {
+                page->_tabView.Dispatcher().RunAsync(CoreDispatcherPriority::Normal, [this, newTabProjection, weakThis]() {
                     if (auto page{ weakThis.get() })
                     {
-                        UInt32 idx = 0;
-                        if (_convertedTabs.IndexOf(newTabImpl, idx))
+                        uint32_t idx = 0;
+                        if (_convertedTabs.IndexOf(newTabProjection, idx))
                         {
                             page->_RemoveTabViewItemByIndex(idx);
                         }
