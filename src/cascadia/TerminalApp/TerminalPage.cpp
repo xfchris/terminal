@@ -68,34 +68,35 @@ namespace winrt::TerminalApp::implementation
         // weak_ptr to this TerminalPage object lambda capturing
         auto weakThis{ get_weak() };
 
-        _tabView.TabDragStarting([weakThis](auto&& /*o*/, auto&& /*a*/) {
-            if (auto page{ weakThis.get() })
-            {
-                page->_rearranging = true;
-                page->_rearrangeFrom = std::nullopt;
-                page->_rearrangeTo = std::nullopt;
-            }
-        });
+        //_tabView.TabDragStarting([weakThis](auto&& /*o*/, auto&& /*a*/) {
+        //    if (auto page{ weakThis.get() })
+        //    {
+        //        page->_rearranging = true;
+        //        page->_rearrangeFrom = std::nullopt;
+        //        page->_rearrangeTo = std::nullopt;
+        //    }
+        //});
 
-        _tabView.TabDragCompleted([weakThis](auto&& /*o*/, auto&& /*a*/) {
-            if (auto page{ weakThis.get() })
-            {
-                auto& from{ page->_rearrangeFrom };
-                auto& to{ page->_rearrangeTo };
+        // TODO: Does Tab Dragging need to be handled like this?
+        //_tabView.TabDragCompleted([weakThis](auto&& /*o*/, auto&& /*a*/) {
+        //    if (auto page{ weakThis.get() })
+        //    {
+        //        auto& from{ page->_rearrangeFrom };
+        //        auto& to{ page->_rearrangeTo };
 
-                if (from.has_value() && to.has_value() && to != from)
-                {
-                    auto& tabs{ page->_convertedTabs };
-                    auto tab = tabs.at(from.value());
-                    tabs.erase(tabs.begin() + from.value());
-                    tabs.insert(tabs.begin() + to.value(), tab);
-                }
+        //        if (from.has_value() && to.has_value() && to != from)
+        //        {
+        //            auto& tabs{ page->_convertedTabs };
+        //            auto tab = tabs.GetAt(from.value());
+        //            tabs.erase(tabs.begin() + from.value());
+        //            tabs.insert(tabs.begin() + to.value(), tab);
+        //        }
 
-                page->_rearranging = false;
-                from = std::nullopt;
-                to = std::nullopt;
-            }
-        });
+        //        page->_rearranging = false;
+        //        from = std::nullopt;
+        //        to = std::nullopt;
+        //    }
+        //});
 
         auto tabRowImpl = winrt::get_self<implementation::TabRowControl>(_tabRow);
         _newTabButton = tabRowImpl->NewTabButton();
