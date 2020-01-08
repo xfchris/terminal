@@ -14,7 +14,6 @@
 
 #include "AzureCloudShellGenerator.h" // For AzureConnectionType
 #include "TelnetGenerator.h" // For TelnetConnectionType
-#include "TabRowControl.h"
 
 using namespace winrt;
 using namespace winrt::Windows::UI::Xaml;
@@ -46,6 +45,19 @@ namespace winrt::TerminalApp::implementation
         _convertedTabs = winrt::single_threaded_observable_vector<winrt::TerminalApp::ConvertedTab>();
     }
 
+    Windows::Foundation::Collections::IObservableVector<TerminalApp::ConvertedTab> TerminalPage::ConvertedTabs()
+    {
+        return _convertedTabs;
+    }
+
+    // Method Description:
+    // - Bound in the Xaml editor to the [+] button.
+    // Arguments:
+    // <unused>
+    void TerminalPage::OnNewTabButtonClick(Windows::Foundation::IInspectable const&, Microsoft::UI::Xaml::Controls::SplitButtonClickEventArgs const&)
+    {
+    }
+
     void TerminalPage::SetSettings(std::shared_ptr<::TerminalApp::CascadiaSettings> settings, bool needRefreshUI)
     {
         _settings = settings;
@@ -61,8 +73,8 @@ namespace winrt::TerminalApp::implementation
         _HookupKeyBindings(_settings->GetKeybindings());
 
         _tabContent = this->TabContent();
-        _tabRow = this->TabRow();
-        _tabView = _tabRow.TabView();
+        /*_tabRow = this->TabRow();*/
+        _tabView = this->TabView();
         _rearranging = false;
 
         // weak_ptr to this TerminalPage object lambda capturing
@@ -98,21 +110,20 @@ namespace winrt::TerminalApp::implementation
         //    }
         //});
 
-        auto tabRowImpl = winrt::get_self<implementation::TabRowControl>(_tabRow);
-        _newTabButton = tabRowImpl->NewTabButton();
+        _newTabButton = this->NewTabButton();
 
         if (_settings->GlobalSettings().GetShowTabsInTitlebar())
         {
             // Remove the TabView from the page. We'll hang on to it, we need to
             // put it in the titlebar.
             uint32_t index = 0;
-            if (this->Root().Children().IndexOf(_tabRow, index))
+            if (this->Root().Children().IndexOf(_tabView, index))
             {
                 this->Root().Children().RemoveAt(index);
             }
 
             // Inform the host that our titlebar content has changed.
-            _setTitleBarContentHandlers(*this, _tabRow);
+            _setTitleBarContentHandlers(*this, _tabView);
         }
 
         // Hookup our event handlers to the ShortcutActionDispatch
@@ -738,7 +749,7 @@ namespace winrt::TerminalApp::implementation
 
         // collapse/show the row that the tabs are in.
         // NaN is the special value XAML uses for "Auto" sizing.
-        _tabRow.Height(isVisible ? NAN : 0);
+        _tabView.Height(isVisible ? NAN : 0);
     }
 
     // Method Description:

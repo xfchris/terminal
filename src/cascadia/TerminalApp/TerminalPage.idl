@@ -18,6 +18,6 @@ namespace TerminalApp
         event Windows.Foundation.TypedEventHandler<Object, Windows.UI.Xaml.Controls.ContentDialog> ShowDialog;
         event Windows.Foundation.TypedEventHandler<Object, ToggleFullscreenEventArgs> ToggleFullscreen;
 
-		Windows.Foundation.Collections.IObservableVector<TerminalApp.ConvertedTab> _convertedTabs;
+        Windows.Foundation.Collections.IObservableVector<ConvertedTab> ConvertedTabs { get; };
     }
 }
