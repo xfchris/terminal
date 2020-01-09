@@ -73,10 +73,8 @@ namespace winrt::TerminalApp::implementation
 
         _tabContent = this->TabContent();
         _tabView = this->TabView();
-        _rearranging = false;
-
-        // weak_ptr to this TerminalPage object lambda capturing
-        auto weakThis{ get_weak() };
+        //_rearranging = false;
+        _newTabButton = this->NewTabButton();
 
         // TODO: Does Tab Dragging need to be handled like this?
         //_tabView.TabDragStarting([weakThis](auto&& /*o*/, auto&& /*a*/) {
@@ -107,8 +105,6 @@ namespace winrt::TerminalApp::implementation
         //    }
         //});
 
-        _newTabButton = this->NewTabButton();
-
         if (_settings->GlobalSettings().GetShowTabsInTitlebar())
         {
             // Remove the TabView from the page. We'll hang on to it, we need to
@@ -127,7 +123,7 @@ namespace winrt::TerminalApp::implementation
         _RegisterActionCallbacks();
 
         //Event Bindings (Early)
-        _newTabButton.Click([weakThis](auto&&, auto&&) {
+        _newTabButton.Click([weakThis{ get_weak() }](auto&&, auto&&) {
             if (auto page{ weakThis.get() })
             {
                 page->_OpenNewTab(nullptr);
@@ -491,17 +487,18 @@ namespace winrt::TerminalApp::implementation
             newTabImpl->UpdateIcon(profile->GetExpandedIconPath());
         }
 
+        // TODO: Should I replace this with some other function?
         /*tabViewItem.PointerPressed({ this, &TerminalPage::_OnTabClick });*/
 
         // When the tab is closed, remove it from our list of tabs.
-        newTabImpl->Closed([this, newTabProjection, weakThis](auto&& /*s*/, auto&& /*e*/) {
+        newTabImpl->Closed([newTabProjection, weakThis](auto&& /*s*/, auto&& /*e*/) {
             if (auto page{ weakThis.get() })
             {
-                page->_tabView.Dispatcher().RunAsync(CoreDispatcherPriority::Normal, [this, newTabProjection, weakThis]() {
+                page->_tabView.Dispatcher().RunAsync(CoreDispatcherPriority::Normal, [newTabProjection, weakThis]() {
                     if (auto page{ weakThis.get() })
                     {
                         uint32_t idx = 0;
-                        if (_convertedTabs.IndexOf(newTabProjection, idx))
+                        if (page->_convertedTabs.IndexOf(newTabProjection, idx))
                         {
                             page->_RemoveTabViewItemByIndex(idx);
                         }
@@ -736,9 +733,9 @@ namespace winrt::TerminalApp::implementation
     void TerminalPage::_DuplicateTabViewItem()
     {
         const int& focusedTabIndex = _GetFocusedTabIndex();
-        const auto& _tab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
+        auto focusedTab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
 
-        const auto& profileGuid = _tab->GetFocusedProfile();
+        const auto& profileGuid = focusedTab->GetFocusedProfile();
         if (profileGuid.has_value())
         {
             const auto settings = _settings->BuildSettings(profileGuid.value());
@@ -1023,7 +1020,8 @@ namespace winrt::TerminalApp::implementation
     void TerminalPage::_ResizePane(const Direction& direction)
     {
         const auto focusedTabIndex = _GetFocusedTabIndex();
-        (winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex)))->ResizePane(direction);
+        auto tab = winrt::get_self<implementation::ConvertedTab>(_convertedTabs.GetAt(focusedTabIndex));
+        tab->ResizePane(direction);
     }
 
     // Method Description:
