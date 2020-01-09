@@ -20,6 +20,6 @@ namespace TerminalApp
 
         Microsoft.UI.Xaml.Controls.TabView TabView { get; };
 
-        Windows.Foundation.Collections.IObservableVector<ConvertedTab> ConvertedTabs { get; };
+        Windows.Foundation.Collections.IObservableVector<ConvertedTab> ConvertedTabs;
     }
 }

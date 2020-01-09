@@ -35,6 +35,7 @@ namespace winrt::TerminalApp::implementation
         void OnNewTabButtonClick(Windows::Foundation::IInspectable const& sender, Microsoft::UI::Xaml::Controls::SplitButtonClickEventArgs const& args);
 
         Windows::Foundation::Collections::IObservableVector<TerminalApp::ConvertedTab> ConvertedTabs();
+        void ConvertedTabs(const Windows::Foundation::Collections::IObservableVector<TerminalApp::ConvertedTab>& val);
 
         // -------------------------------- WinRT Events ---------------------------------
         DECLARE_EVENT_WITH_TYPED_EVENT_HANDLER(TitleChanged, _titleChangeHandlers, winrt::Windows::Foundation::IInspectable, winrt::hstring);
@@ -56,7 +57,7 @@ namespace winrt::TerminalApp::implementation
 
         std::shared_ptr<::TerminalApp::CascadiaSettings> _settings{ nullptr };
 
-        Windows::Foundation::Collections::IObservableVector<TerminalApp::ConvertedTab> _convertedTabs;
+        Windows::Foundation::Collections::IObservableVector<TerminalApp::ConvertedTab> _ConvertedTabs;
 
         bool _isFullscreen{ false };
 
