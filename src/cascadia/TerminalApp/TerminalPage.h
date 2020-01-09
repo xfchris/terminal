@@ -56,7 +56,6 @@ namespace winrt::TerminalApp::implementation
 
         std::shared_ptr<::TerminalApp::CascadiaSettings> _settings{ nullptr };
 
-        std::vector<std::shared_ptr<Tab>> _tabs;
         Windows::Foundation::Collections::IObservableVector<TerminalApp::ConvertedTab> _convertedTabs;
 
         bool _isFullscreen{ false };

@@ -37,8 +37,7 @@ namespace winrt
 
 namespace winrt::TerminalApp::implementation
 {
-    TerminalPage::TerminalPage() :
-        _tabs{}
+    TerminalPage::TerminalPage()
     {
         InitializeComponent();
 
@@ -73,13 +72,13 @@ namespace winrt::TerminalApp::implementation
         _HookupKeyBindings(_settings->GetKeybindings());
 
         _tabContent = this->TabContent();
-        /*_tabRow = this->TabRow();*/
         _tabView = this->TabView();
         _rearranging = false;
 
         // weak_ptr to this TerminalPage object lambda capturing
         auto weakThis{ get_weak() };
 
+        // TODO: Does Tab Dragging need to be handled like this?
         //_tabView.TabDragStarting([weakThis](auto&& /*o*/, auto&& /*a*/) {
         //    if (auto page{ weakThis.get() })
         //    {
@@ -88,8 +87,6 @@ namespace winrt::TerminalApp::implementation
         //        page->_rearrangeTo = std::nullopt;
         //    }
         //});
-
-        // TODO: Does Tab Dragging need to be handled like this?
         //_tabView.TabDragCompleted([weakThis](auto&& /*o*/, auto&& /*a*/) {
         //    if (auto page{ weakThis.get() })
         //    {
@@ -460,8 +457,6 @@ namespace winrt::TerminalApp::implementation
         TermControl term{ settings, connection };
 
         // Add the new tab to the list of our tabs.
-        //auto newTab = _tabs.emplace_back(std::make_shared<Tab>(profileGuid, term));
-
         auto newTabProjection = winrt::make<ConvertedTab>(profileGuid, term);
         auto newTabImpl = winrt::get_self<implementation::ConvertedTab>(newTabProjection);
         _convertedTabs.Append(newTabProjection);
@@ -476,20 +471,6 @@ namespace winrt::TerminalApp::implementation
 
         //// When the tab's active pane changes, we'll want to lookup a new icon
         //// for it, and possibly propogate the title up to the window.
-        //newTab->ActivePaneChanged([weakTabPtr, weakThis]() {
-        //    auto page{ weakThis.get() };
-        //    auto tab{ weakTabPtr.lock() };
-
-        //    if (page && tab)
-        //    {
-        //        // Possibly update the icon of the tab.
-        //        page->_UpdateTabIcon(tab);
-        //        // Possibly update the title of the tab, window to match the newly
-        //        // focused pane.
-        //        page->_UpdateTitle(tab);
-        //    }
-        //});
-
         newTabImpl->ActivePaneChanged([newTabProjection, weakThis]() {
             auto page{ weakThis.get() };
 
@@ -502,9 +483,6 @@ namespace winrt::TerminalApp::implementation
                 page->_UpdateTitle(newTabProjection);
             }
         });
-
-        //auto tabViewItem = newTab->GetTabViewItem();
-        //_tabView.TabItems().Append(tabViewItem);
 
         // Set this tab's icon to the icon from the user's profile
         const auto* const profile = _settings->FindProfile(profileGuid);
@@ -538,6 +516,7 @@ namespace winrt::TerminalApp::implementation
         // This kicks off TabView::SelectionChanged, in response to which we'll attach the terminal's
         // Xaml control to the Xaml root.
         /*_tabView.SelectedItem(tabViewItem);*/
+        _tabView.SelectedIndex(_convertedTabs.Size() - 1);
     }
 
     // Method Description:
