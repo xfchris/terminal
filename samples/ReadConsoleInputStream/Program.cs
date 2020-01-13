@@ -140,7 +140,7 @@ namespace Samples.Terminal
                 // timeout
             }
 
-            Console.WriteLine("press any key...");
+            Console.WriteLine("Press any key...");
             Console.ReadKey(true);
         }
     }
